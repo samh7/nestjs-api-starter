@@ -6,6 +6,7 @@
 - Typeorm
 - PassportJS
 - Winston
+- mysql
 - others....
 
 

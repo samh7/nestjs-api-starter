@@ -4,12 +4,12 @@ import {
   NestModule,
 } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './resources/users/users.module';
+import { UsersModule } from '#/modules/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
-import environment from './shared/environment';
-import { LoggerMiddleware } from './shared/middlewares/logger.middleware';
+import environment from '#/common/environment';
+import { LoggerMiddleware } from '#/common/middlewares/logger.middleware';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { TimeConstants } from './shared/constants/time.constant';
+import { TimeConstants } from '#/common/constants/time.constant';
 
 @Module({
   imports: [

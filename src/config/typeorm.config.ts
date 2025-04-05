@@ -1,5 +1,5 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
-import environment from '../shared/environment';
+import environment from '#/common/environment';
 import { SeederOptions } from 'typeorm-extension';
 
 export const dataSourceOptions: DataSourceOptions & SeederOptions = {

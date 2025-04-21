@@ -10,6 +10,7 @@ import environment from '#/common/environment';
 import { LoggerMiddleware } from '#/common/middlewares/logger.middleware';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TimeConstants } from '#/common/constants/time.constant';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { TimeConstants } from '#/common/constants/time.constant';
       },
     ]),
     UsersModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

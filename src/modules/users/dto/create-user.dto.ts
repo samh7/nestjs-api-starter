@@ -4,23 +4,11 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @IsEmail()
-    email: string
+    email: string;
 
 
     @IsNotEmpty()
     @IsString()
-    password: string
-
-}
-
-
-export class LoginDto{
-    @IsNotEmpty()
-    @IsString()
-    email: string
-
-    @IsNotEmpty()
-    @IsString()
-    password: string
+    password: string;
 
 }

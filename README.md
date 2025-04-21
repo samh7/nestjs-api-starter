@@ -7,6 +7,7 @@
 - PassportJS
 - Winston
 - mysql
+- Nodemailer
 - others....
 
 
@@ -17,3 +18,4 @@
 - Typeorm db with migrations and seeding
 - Throttler
 - Env varibales validation
+- Emails

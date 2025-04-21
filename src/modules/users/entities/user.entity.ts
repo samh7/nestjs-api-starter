@@ -1,12 +1,18 @@
 import { Exclude } from 'class-transformer';
-import { EmploymentType, Gender } from '#/common/enums/user.enum';
+import { Column, Entity } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity('users')
 export class User extends BaseEntity {
   @Column({ unique: true })
   email: string;
+
+  @Column({ default: false })
+  isVerified: boolean;
+
+  @Column({ unique: true })
+  @Exclude()
+  emailVerifyCode: string;
 
   @Column()
   @Exclude()

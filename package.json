@@ -22,8 +22,7 @@
     "migration:create": "npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create -d ./src/config/typeorm.config.ts ./src/database/migrations/migration",
     "migration:run": "npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./src/config/typeorm.config.ts",
     "migration:revert": "npx ts-node -P ./tsconfig.json -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d ./src/config/typeorm.config.ts",
-    "db:seed": "npx ts-node -r tsconfig-paths/register  src/database/seed.ts",
-    "repl": "nest start --entryFile repl"
+    "db:seed": "npx ts-node -r tsconfig-paths/register  src/database/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.15",
@@ -43,6 +42,7 @@
     "glob": "^11.0.0",
     "mysql": "^2.18.1",
     "nestjs-pino": "^4.4.0",
+    "nodemailer": "^6.10.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",

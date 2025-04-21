@@ -4,41 +4,65 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto, LoginDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { Not, Repository, IsNull } from 'typeorm';
 import { compare, hash } from 'bcryptjs';
-import { plainToClass, plainToInstance } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
+import { Repository } from 'typeorm';
+import environment from "../../common/environment";
+import { ConfirmEmailType } from "../../common/types";
+import { generateEmailVerificationCode } from "../../common/utils";
+import { LoginDto } from "../auth/dto/login.dto";
+import { EmailService } from "../email/email.service";
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+    private readonly emailService: EmailService,
 
-  async validateUser(createAuthDto: LoginDto) {
-    const loginUser = await this.login(createAuthDto);
-
-    return loginUser;
-  }
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
+
+    const _existingUser = await this.userRepository.findOneBy({ email: createUserDto.email });
+
+    if (_existingUser) {
+      throw new HttpException('User with this email already exists', HttpStatus.BAD_REQUEST);
+    }
+
     try {
       const hashedPassword = await hash(createUserDto.password, 10);
 
-      const newUser: CreateUserDto = {
+      const newUser: Partial<User> & CreateUserDto = {
         ...createUserDto,
+        emailVerifyCode: generateEmailVerificationCode(17),
         password: hashedPassword,
       };
 
-      const savedUser = plainToClass(
+      const savedUser = plainToInstance(
         User,
         await this.userRepository.save(newUser),
       );
 
+      const context
+        : ConfirmEmailType
+        = {
+        name: savedUser.email,
+        verificationLink: `${environment.VERIFY_EMAIL_URL}/${savedUser.emailVerifyCode}`,
+        appName: environment.APP_NAME,
+        year: new Date(),
+      };
+
+      this.emailService.sendEmail(
+        savedUser.email,
+        'Please confirm your email',
+        'confirm-email',
+        context
+      );
       if (!savedUser)
         throw new HttpException(
           'User creation failed',
@@ -75,7 +99,7 @@ export class UsersService {
         HttpStatus.UNAUTHORIZED,
       );
 
-    return plainToClass(User, canUserLogIn);
+    return plainToInstance(User, canUserLogIn);
   }
 
   async findAll() {
@@ -93,7 +117,7 @@ export class UsersService {
     try {
       if (!email) throw new NotFoundException();
 
-      return plainToClass(
+      return plainToInstance(
         User,
         await this.userRepository.findOne({ where: { email } }),
       );
@@ -111,7 +135,7 @@ export class UsersService {
 
       const updatedUser = Object.assign(user, updateUserDto);
 
-      return plainToClass(User, await this.userRepository.save(updatedUser));
+      return plainToInstance(User, await this.userRepository.save(updatedUser));
     } catch (error) {
       if (error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
         throw new HttpException('Duplicate entry', HttpStatus.CONFLICT);

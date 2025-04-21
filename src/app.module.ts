@@ -1,16 +1,17 @@
+import environment from '#/common/environment';
+import { LoggerMiddleware } from '#/common/middlewares/logger.middleware';
+import { UsersModule } from '#/modules/users/users.module';
 import {
   MiddlewareConsumer,
   Module,
   NestModule,
 } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from '#/modules/users/users.module';
+import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from '@nestjs/jwt';
-import environment from '#/common/environment';
-import { LoggerMiddleware } from '#/common/middlewares/logger.middleware';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { TimeConstants } from '#/common/constants/time.constant';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -29,33 +30,28 @@ import { AuthModule } from './modules/auth/auth.module';
       global: true,
       secret: environment.JWT_ACCESS_TOKEN_SECRET,
       signOptions: {
-        // 32days
-        expiresIn: '768h',
+        expiresIn: environment.JWT_EXPIRES_IN,
       },
     }),
 
     ThrottlerModule.forRoot([
       {
-        name: 'short',
-        ttl: TimeConstants.SECOND * 3,
-        limit: 1,
-      },
-      {
-        name: 'medium',
-        ttl: 10 * TimeConstants.SECOND,
-        limit: 4,
-      },
-      {
-        name: 'long',
-        ttl: TimeConstants.MINUTE,
-        limit: 7,
+        ttl: 60000,
+        limit: 600,
       },
     ]),
     UsersModule,
     AuthModule,
+    EmailModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

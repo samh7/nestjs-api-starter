@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
-import { z } from 'zod';
 import { expand } from 'dotenv-expand';
+import { z } from 'zod';
 
 expand(config());
 const EnvSchema = z.object({
@@ -14,6 +14,12 @@ const EnvSchema = z.object({
   JWT_ACCESS_TOKEN_SECRET: z.string(),
   JWT_REFRESH_TOKEN_SECRET: z.string(),
   FRONTEND_URL: z.string(),
+  EMAIL_USERNAME: z.string(),
+  EMAIL_PASSWORD: z.string(),
+  VERIFY_EMAIL_URL: z.string(),
+  APP_NAME: z.string(),
+  JWT_EXPIRES_IN: z.string().default('1d'),
+  BACKEND_URL: z.string(),
 });
 
 const environment = EnvSchema.parse(process.env);

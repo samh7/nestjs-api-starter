@@ -1,4 +1,4 @@
-import { ConfirmEmailType } from "@shared/types";
+import { ConfirmEmailType } from "../../../common/types";
 
 export function generateVerificationEmail(context: ConfirmEmailType): string {
   const { name, verificationLink, year, appName } = context;

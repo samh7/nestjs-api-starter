@@ -1,4 +1,4 @@
-import { WelcomeEmailType } from "@shared/types";
+import { WelcomeEmailType } from "../../../common/types";
 
 export function generateWelcomeEmail(context: WelcomeEmailType): string {
   const { appName, dashboardLink, year, name } = context;

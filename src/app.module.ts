@@ -23,7 +23,8 @@ import { EmailModule } from './modules/email/email.module';
       username: environment.DB_USERNAME,
       password: environment.DB_PASSWORD,
       entities: [__dirname + '**/*.entity{.ts,.js}'],
-      synchronize: false,
+      synchronize: true // true for development only
+      ,
       autoLoadEntities: true,
     }),
     JwtModule.register({

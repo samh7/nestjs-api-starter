@@ -38,7 +38,7 @@ export class EmailService {
 			from: environment.EMAIL_USERNAME,
 			to,
 			subject,
-			html: html
+			html
 		};
 
 		try {

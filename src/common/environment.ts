@@ -12,7 +12,6 @@ const EnvSchema = z.object({
   DB_PASSWORD: z.string(),
   NODE_ENV: z.string(),
   JWT_ACCESS_TOKEN_SECRET: z.string(),
-  JWT_REFRESH_TOKEN_SECRET: z.string(),
   FRONTEND_URL: z.string(),
   EMAIL_USERNAME: z.string(),
   EMAIL_PASSWORD: z.string(),

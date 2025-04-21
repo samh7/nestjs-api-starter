@@ -10,11 +10,11 @@ export class User extends BaseEntity {
   @Column({ default: false })
   isVerified: boolean;
 
-  @Column({ unique: true })
   @Exclude()
-  emailVerifyCode: string;
+  @Column({ nullable: true })
+  emailVerifyCode: string | null;
 
-  @Column()
   @Exclude()
+  @Column()
   password: string;
 }

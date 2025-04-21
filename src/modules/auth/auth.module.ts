@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { EmailService } from "../email/email.service";
+import { EmailModule } from "../email/email.module";
 import { User } from "../users/entities/user.entity";
-import { UsersService } from "../users/users.service";
+import { UsersModule } from "../users/users.module";
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from "./strategies/jwt.strategy";
@@ -10,8 +10,10 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
+    UsersModule,
+    EmailModule
   ],
-  controllers: [AuthController, UsersService, EmailService, JwtStrategy],
-  providers: [AuthService],
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule { }

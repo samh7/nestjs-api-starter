@@ -34,12 +34,14 @@ export class UsersService {
       throw new HttpException('User with this email already exists', HttpStatus.BAD_REQUEST);
     }
 
+
     try {
       const hashedPassword = await hash(createUserDto.password, 10);
 
-      const newUser: Partial<User> & CreateUserDto = {
+      const emailVerifyCode = generateEmailVerificationCode(17);
+      const newUser: Partial<User> = {
         ...createUserDto,
-        emailVerifyCode: generateEmailVerificationCode(17),
+        emailVerifyCode,
         password: hashedPassword,
       };
 
@@ -52,7 +54,7 @@ export class UsersService {
         : ConfirmEmailType
         = {
         name: savedUser.email,
-        verificationLink: `${environment.VERIFY_EMAIL_URL}/${savedUser.emailVerifyCode}`,
+        verificationLink: `${environment.VERIFY_EMAIL_URL}/${emailVerifyCode}`,
         appName: environment.APP_NAME,
         year: new Date(),
       };

@@ -1,10 +1,11 @@
+import { EnvSchema } from "#/common/env.schema";
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { compare } from "bcryptjs";
 import { plainToInstance } from "class-transformer";
 import { Repository } from "typeorm";
-import environment from "../../common/environment";
 import { WelcomeEmailType } from "../../common/types";
 import { EmailService } from "../email/email.service";
 import { CreateUserDto } from "../users/dto/create-user.dto";
@@ -21,6 +22,7 @@ export class AuthService {
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
+    private readonly configService: ConfigService<EnvSchema>,
   ) { }
 
   async login(loginDto: LoginDto) {
@@ -81,12 +83,12 @@ export class AuthService {
     await this.userRepository.save(user);
 
     const context: WelcomeEmailType = {
-      appName: environment.APP_NAME,
-      dashboardLink: `${environment.BACKEND_URL}`,
+      appName: this.configService.get("APP_NAME"),
+      dashboardLink: `${this.configService.get("BACKEND_URL")}`,
       name: user.email,
       year: new Date(),
     };
-    await this.emailService.sendEmail(user.email, `Welcome to ${environment.APP_NAME}`, "welcome", context);
+    await this.emailService.sendEmail(user.email, `Welcome to ${this.configService.get("APP_NAME")}`, "welcome", context);
 
     return { isVerified: user.isVerified, message: "Email verified successfully" };
   }

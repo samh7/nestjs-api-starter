@@ -1,14 +1,15 @@
+import { EnvSchema } from "#/common/env.schema";
 import {
   HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare, hash } from 'bcryptjs';
 import { plainToInstance } from 'class-transformer';
 import { Repository } from 'typeorm';
-import environment from "../../common/environment";
 import { ConfirmEmailType } from "../../common/types";
 import { generateEmailVerificationCode } from "../../common/utils";
 import { LoginDto } from "../auth/dto/login.dto";
@@ -23,6 +24,7 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly emailService: EmailService,
+    private readonly configService: ConfigService<EnvSchema>
 
   ) { }
 
@@ -54,8 +56,8 @@ export class UsersService {
         : ConfirmEmailType
         = {
         name: savedUser.email,
-        verificationLink: `${environment.VERIFY_EMAIL_URL}/${emailVerifyCode}`,
-        appName: environment.APP_NAME,
+        verificationLink: `${this.configService.get("VERIFY_EMAIL_URL")}/${emailVerifyCode}`,
+        appName: this.configService.get("APP_NAME"),
         year: new Date(),
       };
 

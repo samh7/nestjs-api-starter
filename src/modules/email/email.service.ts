@@ -1,6 +1,7 @@
+import { EnvSchema } from "#/common/env.schema";
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import environment from "../../common/environment";
 import { ConfirmEmailType, EmailTemplate, EmailType, WelcomeEmailType } from "../../common/types";
 import { generateVerificationEmail } from "./templates/confirmEmail";
 import { generateWelcomeEmail } from "./templates/welcomeEmail";
@@ -8,12 +9,14 @@ import { generateWelcomeEmail } from "./templates/welcomeEmail";
 export class EmailService {
 	private readonly transporter: nodemailer.Transporter;
 
-	constructor() {
+	constructor(
+		private readonly configService: ConfigService<EnvSchema>
+	) {
 		this.transporter = nodemailer.createTransport({
 			service: 'gmail',
 			auth: {
-				user: environment.EMAIL_USERNAME,
-				pass: environment.EMAIL_PASSWORD,
+				user: this.configService.get("EMAIL_USERNAME"),
+				pass: this.configService.get("EMAIL_PASSWORD"),
 			},
 		});
 
@@ -35,7 +38,7 @@ export class EmailService {
 				throw new Error(`Unknown template: ${template}`);
 		}
 		const mailOptions = {
-			from: environment.EMAIL_USERNAME,
+			from: this.configService.get("EMAIL_USERNAME"),
 			to,
 			subject,
 			html

@@ -1,7 +1,7 @@
+import { dataSourceOptions } from '#/common/typeorm.config';
+import * as dotenv from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { runSeeders, SeederOptions } from 'typeorm-extension';
-import { dataSourceOptions } from '#/config/typeorm.config';
-import * as dotenv from 'dotenv';
 dotenv.config();
 (async () => {
   const options: DataSourceOptions & SeederOptions = dataSourceOptions;

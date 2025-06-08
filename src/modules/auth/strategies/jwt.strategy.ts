@@ -1,5 +1,6 @@
-import environment from '#/common/environment';
+import { EnvSchema } from "#/common/env.schema";
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService } from "../auth.service";
@@ -7,12 +8,13 @@ import { AuthService } from "../auth.service";
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
     constructor(
-        private readonly authService: AuthService
+        private readonly authService: AuthService,
+        private readonly ConfigService: ConfigService<EnvSchema>
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: environment.JWT_ACCESS_TOKEN_SECRET,
+            secretOrKey: ConfigService.get("JWT_ACCESS_TOKEN_SECRET"),
         });
     }
     async validate(payload: any) {

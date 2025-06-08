@@ -1,39 +1,49 @@
-import environment from '#/common/environment';
-import { LoggerMiddleware } from '#/common/middlewares/logger.middleware';
 import { UsersModule } from '#/modules/users/users.module';
 import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
+  Module
 } from '@nestjs/common';
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { EnvSchema } from "./common/env.schema";
 import { AuthModule } from './modules/auth/auth.module';
 import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      database: environment.DATABASE,
-      host: environment.DB_HOST,
-      port: environment.DB_PORT,
-      username: environment.DB_USERNAME,
-      password: environment.DB_PASSWORD,
-      entities: [__dirname + '**/*.entity{.ts,.js}'],
-      synchronize: true // true for development only
-      ,
-      autoLoadEntities: true,
-    }),
-    JwtModule.register({
-      global: true,
-      secret: environment.JWT_ACCESS_TOKEN_SECRET,
-      signOptions: {
-        expiresIn: environment.JWT_EXPIRES_IN,
-      },
-    }),
+    TypeOrmModule.forRootAsync(
+      {
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService<EnvSchema>) => ({
+          type: 'mysql',
+          database: configService.get("DATABASE"),
+          host: configService.get("DB_HOST"),
+          port: configService.get("DB_PORT"),
+          username: configService.get("DB_USERNAME"),
+          password: configService.get("DB_PASSWORD"),
+          logging: true,
+          logger: "advanced-console",
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          synchronize: configService.get("NODE_ENV") === "development" ? true : false
+        })
+      }
+    ),
+    JwtModule.registerAsync(
+      {
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService<EnvSchema>) => ({
+          global: true,
+          secret: configService.get("JWT_ACCESS_TOKEN_SECRET"),
+          signOptions: {
+            expiresIn: configService.get("JWT_EXPIRES_IN"),
+          },
+        })
+      }
+    ),
 
     ThrottlerModule.forRoot([
       {
@@ -54,8 +64,4 @@ import { EmailModule } from './modules/email/email.module';
     },
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
-  }
-}
+export class AppModule { }

@@ -102,4 +102,4 @@ See [`.env.example`](.env.example) for all available configuration options
 
 ## License
 
-UNLICENSED
+[`MIT LICENSE`](LICENSE)

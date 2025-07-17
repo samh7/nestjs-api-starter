@@ -15,14 +15,6 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @IsString()
-    schoolName: string;
-
-    @IsNotEmpty()
-    @IsString()
-    principalName: string;
-
-    @IsNotEmpty()
-    @IsString()
     maxStorage: string;
 
     @IsNotEmpty()

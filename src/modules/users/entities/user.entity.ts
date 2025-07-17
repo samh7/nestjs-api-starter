@@ -5,25 +5,11 @@ import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 import { BaseEntity } from '../../../common/base.entity';
 
 
-export enum SchoolType {
-  admin = "admin",
-  school = "school"
-}
-
 @Entity('users')
 export class User extends BaseEntity {
 
   @Column()
   adminName: string;
-
-  @Column()
-  schoolName: string;
-
-  @Column({ enum: SchoolType, default: SchoolType.school })
-  type: SchoolType;
-
-  @Column()
-  principalName: string;
 
   @Column()
   maxStorage: string;

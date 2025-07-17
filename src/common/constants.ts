@@ -1,0 +1,1 @@
+export const HOURS_PASSED_BEFORE_SENT_EMAIL = 5;

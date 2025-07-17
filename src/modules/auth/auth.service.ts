@@ -1,9 +1,10 @@
+import { HOURS_PASSED_BEFORE_SENT_EMAIL } from "#/common/constants";
 import { EnvSchema } from "#/common/env.schema";
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { generateEmailVerificationCode, hasPassedHours } from "#/common/utils";
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
-import { compare } from "bcryptjs";
 import { plainToInstance } from "class-transformer";
 import { Repository } from "typeorm";
 import { WelcomeEmailType } from "../../common/types";
@@ -12,6 +13,7 @@ import { CreateUserDto } from "../users/dto/create-user.dto";
 import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
 import { LoginDto } from './dto/login.dto';
+import { PasswordResetDto } from './dto/password-reset-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,28 +28,17 @@ export class AuthService {
   ) { }
 
   async login(loginDto: LoginDto) {
-    const { email, password } = loginDto;
 
-    const _user = await this.userRepository.findOneBy({ email });
-    if (!_user) {
-      throw new NotFoundException('User not found');
-    }
-
-    if (!(await compare(password, _user.password))) {
-      throw new UnauthorizedException('Invalid password');
-    }
-
-    await this.userRepository.save(_user);
-
+    const isUserSaved = await this.userService.login(loginDto);
 
     const payload = {
-      email,
-      id: _user.id
+      email: isUserSaved.email,
+      id: isUserSaved.id
     };
 
     const accessToken = this.jwtService.sign(payload);
 
-    const user = plainToInstance(User, _user);
+    const user = plainToInstance(User, isUserSaved);
     return { user, accessToken };
   }
 
@@ -58,17 +49,18 @@ export class AuthService {
   }
 
 
-  status(user: User) {
+  async status(user: User) {
 
     if (!user) {
       throw new UnauthorizedException("User not found");
     }
-    const _user = this.userService.findOne(user.id);
-    if (!_user) {
+    const isuUserSaved = this.userService.findOne(user.id);
+    if (!isuUserSaved) {
       throw new UnauthorizedException("User not found");
     }
 
-    return plainToInstance(User, user);
+    // dont touch it
+    return await plainToInstance(User, user);
   }
 
 
@@ -92,4 +84,48 @@ export class AuthService {
 
     return { isVerified: user.isVerified, message: "Email verified successfully" };
   }
+
+
+  async generatePasswordResetToken(email: string) {
+
+    const passwordResetTokenGenerateAt = new Date();
+
+    const isSavedUser = await this.userRepository.findOneBy({
+      email: email
+    });
+
+    if (isSavedUser.passwordResetToken) {
+
+      throw new BadRequestException("");
+
+    }
+
+    const passwordResetToken = generateEmailVerificationCode(32);
+
+    const userUpdate = Object.assign(isSavedUser, { passwordResetToken, passwordResetTokenGenerateAt });
+
+    return { email: isSavedUser.email, resetToken: userUpdate.passwordResetToken };
+  }
+
+
+  async resetPassword(passwordResetDto: PasswordResetDto) {
+
+    const isSavedUser = await this.userRepository.findOneBy({
+      email: passwordResetDto.email
+    });
+
+    // hehe
+    const canResetPassword = hasPassedHours(new Date(), isSavedUser.lastPasswordReset, HOURS_PASSED_BEFORE_SENT_EMAIL);
+
+    if (!canResetPassword) {
+      throw new BadRequestException("Sorry Cannot reset password");
+    }
+
+    const userUpdate = Object.assign(isSavedUser, {
+      password: passwordResetDto.password
+    });
+
+    return plainToInstance(User, this.userRepository.save(userUpdate));
+
+  };
 }

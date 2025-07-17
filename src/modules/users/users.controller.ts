@@ -1,3 +1,4 @@
+import { tryExecuteAsync } from "#/common/utils";
 import {
   Body,
   Controller,
@@ -21,24 +22,25 @@ export class UsersController {
 
   @Get()
   findAll() {
-    return this.usersService.findAll();
+    return tryExecuteAsync(this.usersService.findAll);
   }
 
 
-  @Get(':email')
-  findOne(@Param('email') email: string) {
-    return this.usersService.findOne(email);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return tryExecuteAsync(this.usersService.findOne, id);
+
   }
 
 
-  @Patch(':email')
-  update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(email, updateUserDto);
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return tryExecuteAsync(this.usersService.update, id, updateUserDto);
   }
 
 
-  @Delete(':email')
-  remove(@Param('email') email: string) {
-    return this.usersService.remove(email);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    tryExecuteAsync(this.usersService.remove, id);
   }
 }

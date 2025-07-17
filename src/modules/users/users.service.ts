@@ -1,5 +1,4 @@
 import { EnvSchema } from "#/common/env.schema";
-import { ConfirmEmailType } from "#/common/types";
 import {
   HttpException,
   HttpStatus,
@@ -31,21 +30,21 @@ export class UsersService {
 
     const savedUser = await this.userRepository.save(entityLikeUser);
 
-    const context
-      : ConfirmEmailType
-      = {
-      name: savedUser.email,
-      verificationLink: `${this.configService.get("VERIFY_EMAIL_URL")}/${savedUser.emailVerifyCode}`,
-      appName: this.configService.get("APP_NAME"),
-      year: new Date(),
-    };
+    // const context
+    //   : ConfirmEmailType
+    //   = {
+    //   name: savedUser.email,
+    //   verificationLink: `${this.configService.get("VERIFY_EMAIL_URL")}/${savedUser.emailVerifyCode}`,
+    //   appName: this.configService.get("APP_NAME"),
+    //   year: new Date(),
+    // };
 
-    this.emailService.sendEmail(
-      savedUser.email,
-      'Please confirm your email',
-      'confirm-email',
-      context
-    );
+    // this.emailService.sendEmail(
+    //   savedUser.email,
+    //   'Please confirm your email',
+    //   'confirm-email',
+    //   context
+    // );
 
     return plainToInstance(
       User,

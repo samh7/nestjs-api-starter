@@ -1,8 +1,9 @@
 import { HOURS_PASSED_BEFORE_SENT_EMAIL } from "#/common/constants";
 import { EnvSchema } from "#/common/env.schema";
 import { hasPassedHours } from "#/common/utils";
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from "@nestjs/typeorm";
 import * as nodemailer from 'nodemailer';
 import { Repository } from "typeorm";
 import { ConfirmEmailType, EmailTemplate, EmailType, WelcomeEmailType } from "../../common/types";
@@ -15,7 +16,7 @@ export class EmailService {
 
 	constructor(
 		private readonly configService: ConfigService<EnvSchema>,
-		@Inject(User)
+		@InjectRepository(User)
 		private readonly userService: Repository<User>
 	) {
 		this.transporter = nodemailer.createTransport({

@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { compare, hash } from 'bcryptjs';
+import { compare } from 'bcryptjs';
 import { plainToInstance } from 'class-transformer';
 import { Repository } from 'typeorm';
 import { ConfirmEmailType } from "../../common/types";
@@ -38,13 +38,11 @@ export class UsersService {
 
 
     try {
-      const hashedPassword = await hash(createUserDto.password, 10);
 
       const emailVerifyCode = generateEmailVerificationCode(17);
       const newUser: Partial<User> = {
         ...createUserDto,
         emailVerifyCode,
-        password: hashedPassword,
       };
 
       const savedUser = plainToInstance(
@@ -95,7 +93,6 @@ export class UsersService {
       canUserLogIn.password,
     );
 
-    console.log(compareHashes, ' hashres');
 
     if (!compareHashes)
       throw new HttpException(

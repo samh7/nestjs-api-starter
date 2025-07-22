@@ -16,7 +16,7 @@ A robust starter template for building REST APIs with NestJS, TypeORM, and MySQL
 ## Prerequisites
 
 - Node.js (>=18.x)
-- MySQL
+- MySQL/ psql
 - pnpm (recommended) or npm
 
 ## Getting Started
@@ -103,3 +103,6 @@ See [`.env.example`](.env.example) for all available configuration options
 ## License
 
 [`MIT LICENSE`](LICENSE)
+
+
+

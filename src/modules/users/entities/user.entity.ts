@@ -69,6 +69,7 @@ export class User extends BaseEntity {
   password: string;
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword() {
     this.password = await hash(this.password, 10);
   }

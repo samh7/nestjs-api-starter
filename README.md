@@ -1,3 +1,9 @@
+
+### NOTE!!!!!!!!!!!!!!!!!!
+- DEPSITE THE NAME DONT USE IT AS A STARTER!
+- ONLY COPY THE PARTS THAT YOU WANT TO USE!
+- I USE IT TO EXPERIMENT NESTJS CONCEPTS!
+
 # NestJS API Starter
 
 A robust starter template for building REST APIs with NestJS, TypeORM, and MySQL. This template includes authentication, user management, email verification, rate limiting, and best practices for configuration and validation.
